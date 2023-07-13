@@ -29,7 +29,10 @@
     "compile": "tsc -b ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json",
     "optimize": "esbuild ./build/**/*.js ./bin/index.js --minify --outdir=./build/ --entry-names=[dir]/[name].min",
     "build": "npm run cleanup && npm run compile && npm run optimize && npm run size",
-    "prepare": "npm run build",
+
+    "prepare": "husky install",
+    "commit:checks": "npx lint-staged && npx validate-branch-name && git-cz",
+    "pc": "cross-env CHECKS_RUN=1 npm run commit:checks",
 
     "start": "tsdx watch",
     "test": "tsdx test",
@@ -40,19 +43,35 @@
       "pre-commit": "tsdx lint"
     }
   },
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5"
+  "lint-staged": {
+    "*.js, *.json, *.ts": "eslint"
+  },
+  "validate-branch-name": {
+    "pattern": "^(master|main|develop){1}$|^(chores|feature|fix|hotfix|release)/.+$",
+    "errorMsg": "Invalid branch name \n Ex. [master, main, develop, feature/feature-info, fix/112-fix-info, hotfix/112-hotfix-info, release/1.0.0, chores/chores-info]"
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
+    }
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.6.6",
+    "@commitlint/config-conventional": "^17.6.6",
+    "@commitlint/cz-commitlint": "^17.5.0",
     "@types/node": "^20.4.1",
     "@types/semver": "^7.5.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "commitizen": "^4.3.0",
+    "cross-env": "^7.0.3",
     "del-cli": "^5.0.0",
     "esbuild": "^0.18.11",
+    "eslint": "^8.44.0",
     "husky": "^8.0.3",
-    "typescript": "^5.1.6"
+    "lint-staged": "^13.2.3",
+    "typescript": "^5.1.6",
+    "validate-branch-name": "^1.3.0"
   },
   "dependencies": {
     "chalk": "^5.3.0",
